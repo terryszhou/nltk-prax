@@ -48,7 +48,7 @@ def create_POS_glossary():
 
 # # SAMPLE SENTENCE ANALYSIS - - - - - - - -
 
-sentence = """At eight o'clock on Thursday morning Arthur didn't feel very good."""
+sentence = "The rain in Spain stays mainly in the plains."
 
 # word_tokenize: converts string into tokens.
 tokens = nltk.word_tokenize(sentence)
@@ -60,23 +60,24 @@ tagged = nltk.pos_tag(tokens)
 entities = nltk.ne_chunk(tagged)
 
 # get_chunks: parses chunk tree and extracts names as a list of strings.
+# Note: preferentially targets capitalized words.
 def get_chunks(text):
-  chunked =  nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(text)))
-  continuous_chunk = []
-  current_chunk = []
-  for chunk in chunked:
-    if type(chunk) == nltk.tree.Tree:
-      current_chunk.append(" ".join([token for token, pos in chunk.leaves()]))
-    if current_chunk:
-      named_entity = " ".join(current_chunk)
-      if named_entity not in continuous_chunk:
-        continuous_chunk.append(named_entity)
-        current_chunk = []
+  entities = nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(text)))
+  entity_list = []
+  current_entity = []
+  for entity in entities:
+    if type(entity) == nltk.tree.Tree:
+      current_entity.append(" ".join([token for token, pos in entity.leaves()]))
+    if current_entity:
+      named_entity = " ".join(current_entity)
+      if named_entity not in entity_list:
+        entity_list.append(named_entity)
+        current_entity = []
     else:
       continue
-  return continuous_chunk
+  return entity_list
 
-print(get_chunks(sentence))
+# print(get_chunks(sentence))
 
 # returns true if word exists in standard English corpora.
 def check_word_exists(str):
@@ -85,3 +86,25 @@ def check_word_exists(str):
   print(wnl.lemmatize(str) in words.words())
 
 # check_word_exists("dog")
+
+def basic_stats(text):
+  gutenberg = nltk.corpus.gutenberg
+  # returns total number of characters
+  num_chars = len(gutenberg.raw(text))
+  # returns total word count
+  num_words = len(gutenberg.words(text))
+  # returns total number of sentences
+  num_sents = len(gutenberg.sents(text))
+  # returns total number of unique vocabulary occurrences
+  num_vocab = len(set(w.lower() for w in gutenberg.words(text)))
+  # returns average word length (Note: generally returns 4 - 5 regardless of text)
+  avg_words = round(num_chars/num_words)
+  # returns average sentence length.
+  avg_sents = round(num_words/num_sents)
+  # returns average unique vocabulary frequency
+  avg_vocab = round(num_words/num_vocab)
+
+  # print(num_chars, num_words, num_sents, num_vocab)
+  print(avg_words, avg_sents, avg_vocab)
+
+basic_stats("carroll-alice.txt")
