@@ -1,21 +1,17 @@
-from nltk.corpus import twitter_samples
-from nltk.tag import pos_tag_sents, pos_tag
-from nltk.tokenize import word_tokenize
-from nltk.help import upenn_tagset
-import nltk.data
+import nltk
 import pandas
 
 # # TWITTER SAMPLE ANALYSIS - - - - - - - -
 
 # Renders each tweet as a string
-tweets = twitter_samples.strings("positive_tweets.json")
+tweets = nltk.corpus.twitter_samples.strings("positive_tweets.json")
 
 # Renders each string into a list of parseable tokens
-tweets_tokens = twitter_samples.tokenized("positive_tweets.json")
+tweets_tokens = nltk.corpus.twitter_samples.tokenized("positive_tweets.json")
 
 # Renders a list of tuples containing each token and its POS (Part-of-Speech)
 # Adjectives are marked JJ. Nouns are NN.
-tweets_tagged = pos_tag_sents(tweets_tokens)
+tweets_tagged = nltk.tag.pos_tag_sents(tweets_tokens)
 
 # Iterates through POS-tagged tweets and tots up nouns and adjectives.
 def count_POS():
@@ -55,7 +51,18 @@ def create_POS_glossary():
 sentence = """At eight o'clock on Thursday morning Arthur didn't feel very good."""
 
 # word_tokenize: converts string into tokens.
-tokens = word_tokenize(sentence)
+tokens = nltk.word_tokenize(sentence)
 
-# pos_tag: converts tokens into POS-tagged tuples
-tagged = pos_tag(tokens)
+# pos_tag: converts tokens into POS-tagged tuples.
+tagged = nltk.pos_tag(tokens)
+
+# ne_chunk: returns a tree of named entities.
+entities = nltk.ne_chunk(tagged)
+
+# returns true if word exists in standard English corpora.
+def check_word_exists(str):
+  wnl = nltk.stem.WordNetLemmatizer()
+  words = nltk.corpus.words
+  print(wnl.lemmatize(str) in words.words())
+
+# check_word_exists("dog")
