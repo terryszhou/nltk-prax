@@ -107,4 +107,13 @@ def basic_stats(text):
   # print(num_chars, num_words, num_sents, num_vocab)
   print(avg_words, avg_sents, avg_vocab)
 
-basic_stats("carroll-alice.txt")
+# basic_stats("carroll-alice.txt")
+
+# Sentences of a Gutenberg text.
+alice_sentences = nltk.corpus.gutenberg.sents("carroll-alice.txt")
+
+# Length of longest sentence.
+longest_len = max([len(s) for s in alice_sentences])
+
+# Text of longest sentence (split into list of strings).
+[s for s in alice_sentences if len(s) == longest_len]
