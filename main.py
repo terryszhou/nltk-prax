@@ -59,6 +59,25 @@ tagged = nltk.pos_tag(tokens)
 # ne_chunk: returns a tree of named entities.
 entities = nltk.ne_chunk(tagged)
 
+# get_chunks: parses chunk tree and extracts names as a list of strings.
+def get_chunks(text):
+  chunked =  nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(text)))
+  continuous_chunk = []
+  current_chunk = []
+  for chunk in chunked:
+    if type(chunk) == nltk.tree.Tree:
+      current_chunk.append(" ".join([token for token, pos in chunk.leaves()]))
+    if current_chunk:
+      named_entity = " ".join(current_chunk)
+      if named_entity not in continuous_chunk:
+        continuous_chunk.append(named_entity)
+        current_chunk = []
+    else:
+      continue
+  return continuous_chunk
+
+print(get_chunks(sentence))
+
 # returns true if word exists in standard English corpora.
 def check_word_exists(str):
   wnl = nltk.stem.WordNetLemmatizer()
