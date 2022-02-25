@@ -33,7 +33,7 @@ def count_POS():
 
 # count_POS()
 
-# # CREATED POS GLOSSARY .CSV FILE
+# # CREATED POS GLOSSARY .CSV FILE - - - - - - - -
 
 def create_POS_glossary():
   tagdict = nltk.data.load('help/tagsets/upenn_tagset.pickle')
@@ -46,9 +46,9 @@ def create_POS_glossary():
     ex_list.append(item[1][1])
   d = {"POS": pos_list, "Definition": def_list, "Examples": ex_list}
   df = pandas.DataFrame(data = d)
-  df.to_csv("pos_glossary.csv")
+  df.to_excel("pos_glossary.xlsx")
 
-create_POS_glossary()
+# create_POS_glossary()
 
 # # SAMPLE SENTENCE ANALYSIS - - - - - - - -
 
