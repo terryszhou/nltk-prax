@@ -1,16 +1,14 @@
 import nltk
+import pandas
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+sid = SentimentIntensityAnalyzer()
 
-text = open("alice.txt", "r").read()
+alice_text = open("alice.txt", "r").read()
 
-sentences = nltk.sent_tokenize(text)
+alice_sentences = nltk.sent_tokenize(alice_text)
 
-# print(sentences[10])
-
-sentence = "The rain in Spain stays mainly in the plains."
-
+# Takes sentence as string and parses using Vader Sentiment Intensity Analyzer.
 def sentiment_scores(sentence):
-  sid = SentimentIntensityAnalyzer()
   sentiment_dict = sid.polarity_scores(sentence)
   print(f"Overall sentiment dictionary is: {sentiment_dict}.")
   print(f"Sentence was rated as: {sentiment_dict['neg']*100}% negative")
@@ -24,4 +22,60 @@ def sentiment_scores(sentence):
   else:
     print("neutral")
 
-sentiment_scores(sentences[5])
+compound_scores = []
+
+for sentence in alice_sentences:
+  compound_scores.append((sentence.replace("\n", " "), sid.polarity_scores(sentence)["compound"],
+  sid.polarity_scores(sentence)["pos"],
+  sid.polarity_scores(sentence)["neg"],
+  sid.polarity_scores(sentence)["neu"]))
+
+# Skips Table of Contents, etc.
+filtered_scores = compound_scores[16:]
+
+# Sample set of positive sentences.
+def pos_sentences():
+  i = 0
+  for sent in filtered_scores:
+    if sent[1] < 0:
+      print(sent, "\n")
+      i += 1
+    if i > 5:
+      break
+
+# Sample set of negative sentences.
+def neg_sentences():
+  i = 0
+  for sent in filtered_scores:
+    if sent[1] < 0:
+      print(sent, "\n")
+      i += 1
+    if i > 5:
+      break
+
+all_scores = []
+
+def most_polar_sentences():
+  for sent in filtered_scores:
+    all_scores.append(sent[1])
+  for sent in filtered_scores:
+    if sent[1] == max(all_scores):
+      print(f"The most positive compound score was assigned to:\n{sent}.")
+    elif sent[1] == min(all_scores):
+      print(f"The most negative compound score was assigned to:\n{sent}.")
+
+# most_polar_sentences()
+
+# Generates .xlsx of full text, plus SID values.
+def create_alice_sid():
+  d = {"Sentence": [], "Compound": [], "Positive": [], "Negative": [], "Neutral": []}
+  for sent in filtered_scores:
+    d["Sentence"].append(sent[0])
+    d["Compound"].append(sent[1])
+    d["Positive"].append(sent[2])
+    d["Negative"].append(sent[3])
+    d["Neutral"].append(sent[4])
+  df = pandas.DataFrame(data = d)
+  df.to_excel("alice.xlsx")
+
+# create_alice_sid()
