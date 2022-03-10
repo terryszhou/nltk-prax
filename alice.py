@@ -70,7 +70,7 @@ def create_alice_sid():
   # Defines column names
   df.columns = ["sentences", "compound_score", "pos_score", "neg_score", "neu_score", "chapter"]
   # Writes dataframe to Excel file
-  # df.to_excel("alice.xlsx")
+  df.to_excel("alice.xlsx")
 
 create_alice_sid()
 
@@ -107,4 +107,15 @@ def alice_compound_graph():
   # Shows graph in terminal
   plt.show()
 
-alice_compound_graph()
+# alice_compound_graph()
+
+def alice_overall_sent_totals():
+  df['pos_score'] = numpy.where(df['compound_score'] >= 0.05, 1, 0)
+  df['neg_score'] = numpy.where(df['compound_score'] <= -0.05, 1, 0)
+  df['neu_score'] = numpy.where((df['compound_score'] > -0.05) &
+                            (df['compound_score'] < 0.05), 1, 0)
+  print(f"Number of overall positive sentences is: {len(df[df['pos_score'] == 1])}")
+  print(f"Number of overall neutral sentences is: {len(df[df['neg_score'] == 1])}")
+  print(f"Number of overall negative sentences is: {len(df[df['neu_score'] == 1])}")
+
+alice_overall_sent_totals()
