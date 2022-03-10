@@ -126,7 +126,7 @@ def alice_chap_sent_count_graph():
           height=df.groupby('chapter').nunique()['sentences'].values,
           color="#a53363")
   ax.set_xticklabels(df['chapter'].unique(), rotation=30)
-  ax.set_title('Sentence count per chapter - Alice', fontsize=16)
+  ax.set_title('Sentence count per chapter - Alice in Wonderland', fontsize=16)
   ax.spines['top'].set_visible(False)
   ax.spines['right'].set_visible(False)
   ax.spines['bottom'].set_alpha(0.2)
@@ -135,4 +135,33 @@ def alice_chap_sent_count_graph():
   fig.savefig("public/images/alice_chap_sent_count_graph.png")
   plt.show()
 
-alice_chap_sent_count_graph()
+# alice_chap_sent_count_graph()
+
+def alice_chap_vader_sent_graph():
+  alice_overall_sent_totals()
+  fig, ax = plt.subplots(figsize=(15,7))
+  ax.bar(x=df[df['pos_score'] == 1].groupby('chapter').nunique()['sentences'].index, 
+        height=df[df['pos_score'] == 1].groupby('chapter').nunique()['sentences'].values / df.groupby('chapter').nunique()['sentences'] * 100, alpha=0.8,
+        label='positive', color='purple')
+  ax.bar(x=df[df['neu_score'] == 1].groupby('chapter').nunique()['sentences'].index, 
+        height=df[df['neu_score'] == 1].groupby('chapter').nunique()['sentences'].values / df.groupby('chapter').nunique()['sentences'] * 100, alpha=0.3,
+        bottom=df[df['pos_score'] == 1].groupby('chapter').nunique()['sentences'].values / df.groupby('chapter').nunique()['sentences'] * 100,
+        label='neutral', color='purple')
+  ax.bar(x=df[df['neg_score'] == 1].groupby('chapter').nunique()['sentences'].index, 
+        height=df[df['neg_score'] == 1].groupby('chapter').nunique()['sentences'].values / df.groupby('chapter').nunique()['sentences'] * 100,
+        bottom=df[df['neu_score'] == 1].groupby('chapter').nunique()['sentences'].values / df.groupby('chapter').nunique()['sentences'] * 100 +
+        df[df['pos_score'] == 1].groupby('chapter').nunique()['sentences'].values / df.groupby('chapter').nunique()['sentences'] * 100,
+        label='negative', color='red')
+  ax.legend(frameon=False, bbox_to_anchor=(1, 0.5))
+  ax.set_xticklabels(df['chapter'].unique(), rotation=30)
+  ax.set_title('Sentence sentiment by chapter - Alice in Wonderland', fontsize=16)
+  ax.spines['top'].set_visible(False)
+  ax.spines['right'].set_visible(False)
+  ax.spines['bottom'].set_alpha(0.2)
+  ax.spines['left'].set_alpha(0.2)
+  ax.set_ylabel('[%]')
+  ax.yaxis.grid(alpha=0.2)
+  fig.savefig("public/images/alice_chap_vader_sent_graph.png")
+  plt.show()
+
+alice_chap_vader_sent_graph()
