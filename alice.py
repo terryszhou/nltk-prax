@@ -74,7 +74,7 @@ def create_alice_sid():
 
 create_alice_sid()
 
-def alice_compound_graph():
+def alice_chapter_sentiment_graph():
   # Separates plt tuple into figure and axis
   fig, ax = plt.subplots(figsize=(15,7))
   # Plots mean compound scores by chapter
@@ -107,7 +107,7 @@ def alice_compound_graph():
   # Shows graph in terminal
   plt.show()
 
-# alice_compound_graph()
+# alice_chapter_sentiment_graph()
 
 def alice_overall_sent_totals():
   df['pos_score'] = numpy.where(df['compound_score'] >= 0.05, 1, 0)
@@ -118,4 +118,21 @@ def alice_overall_sent_totals():
   print(f"Number of overall neutral sentences is: {len(df[df['neg_score'] == 1])}")
   print(f"Number of overall negative sentences is: {len(df[df['neu_score'] == 1])}")
 
-alice_overall_sent_totals()
+# alice_overall_sent_totals()
+
+def alice_chap_sent_count_graph():
+  fig, ax = plt.subplots(figsize=(15,7))
+  ax.bar(x=df.groupby('chapter').nunique()['sentences'].index, 
+          height=df.groupby('chapter').nunique()['sentences'].values,
+          color="#a53363")
+  ax.set_xticklabels(df['chapter'].unique(), rotation=30)
+  ax.set_title('Sentence count per chapter - Alice', fontsize=16)
+  ax.spines['top'].set_visible(False)
+  ax.spines['right'].set_visible(False)
+  ax.spines['bottom'].set_alpha(0.2)
+  ax.spines['left'].set_alpha(0.2)
+  ax.yaxis.grid(alpha=0.2)
+  fig.savefig("public/images/alice_chap_sent_count_graph.png")
+  plt.show()
+
+alice_chap_sent_count_graph()
