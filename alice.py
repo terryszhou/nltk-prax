@@ -51,10 +51,10 @@ def most_polar_sentences():
 
 # most_polar_sentences()
 
+df = pandas.DataFrame(compound_scores)
+
 # Generates .xlsx of full text, plus SID values.
 def create_alice_sid():
-  # Creates Pandas DataFrame
-  df = pandas.DataFrame(compound_scores)
   # Creates 'chapter' column. Fills with all strings that contain 'CHAPTER', else NA
   df['chapter'] = numpy.where(df[0].str.find('CHAPTER') != -1,
                               "CHAPTER" + df[0].str.split('CHAPTER').str[1],
@@ -71,6 +71,10 @@ def create_alice_sid():
   df.columns = ["sentences", "compound_score", "pos_score", "neg_score", "neu_score", "chapter"]
   # Writes dataframe to Excel file
   # df.to_excel("alice.xlsx")
+
+create_alice_sid()
+
+def create_alice_graph():
   fig, ax = plt.subplots(figsize=(15,5))
   ax.plot(df.groupby('chapter', sort=False).mean()['compound_score'].index,
           df.groupby('chapter', sort=False).mean()['compound_score'].values, linewidth=3, color="#a53363")
@@ -88,5 +92,4 @@ def create_alice_sid():
   ax.yaxis.grid(alpha=0.2)
   plt.show()
 
-
-create_alice_sid()
+create_alice_graph()
