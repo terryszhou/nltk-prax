@@ -75,7 +75,7 @@ def create_alice_sid():
 create_alice_sid()
 
 def create_alice_graph():
-  fig, ax = plt.subplots(figsize=(15,5))
+  fig, ax = plt.subplots(figsize=(15,7))
   ax.plot(df.groupby('chapter', sort=False).mean()['compound_score'].index,
           df.groupby('chapter', sort=False).mean()['compound_score'].values, linewidth=3, color="#a53363")
   ax.set_xticklabels(df.groupby('chapter', sort=False).mean()['compound_score'].index,
