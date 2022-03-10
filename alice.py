@@ -1,5 +1,6 @@
 import nltk
 import pandas
+import numpy
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 sid = SentimentIntensityAnalyzer()
 
@@ -30,13 +31,10 @@ for sentence in alice_sentences:
   sid.polarity_scores(sentence)["neg"],
   sid.polarity_scores(sentence)["neu"]))
 
-# Skips Table of Contents, etc.
-filtered_scores = compound_scores[16:]
-
 # Sample set of positive sentences.
 def pos_sentences():
   i = 0
-  for sent in filtered_scores:
+  for sent in compound_scores:
     if sent[1] < 0:
       print(sent, "\n")
       i += 1
@@ -46,7 +44,7 @@ def pos_sentences():
 # Sample set of negative sentences.
 def neg_sentences():
   i = 0
-  for sent in filtered_scores:
+  for sent in compound_scores:
     if sent[1] < 0:
       print(sent, "\n")
       i += 1
@@ -56,26 +54,35 @@ def neg_sentences():
 all_scores = []
 
 def most_polar_sentences():
-  for sent in filtered_scores:
+  for sent in compound_scores:
     all_scores.append(sent[1])
-  for sent in filtered_scores:
+  for sent in compound_scores:
     if sent[1] == max(all_scores):
-      print(f"The most positive compound score was assigned to:\n{sent}.")
+      print(f"The most positive compound score was assigned to:\n{sent}.\n")
     elif sent[1] == min(all_scores):
-      print(f"The most negative compound score was assigned to:\n{sent}.")
+      print(f"The most negative compound score was assigned to:\n{sent}.\n")
 
 # most_polar_sentences()
 
 # Generates .xlsx of full text, plus SID values.
 def create_alice_sid():
-  d = {"Sentence": [], "Compound": [], "Positive": [], "Negative": [], "Neutral": []}
-  for sent in filtered_scores:
-    d["Sentence"].append(sent[0])
-    d["Compound"].append(sent[1])
-    d["Positive"].append(sent[2])
-    d["Negative"].append(sent[3])
-    d["Neutral"].append(sent[4])
-  df = pandas.DataFrame(data = d)
+  # Create Pandas DataFrame
+  df = pandas.DataFrame(compound_scores)
+  # Create 'chapter' column
+  df['chapter'] = numpy.where(df[0].str.find('CHAPTER') != -1,
+                              "CHAPTER" + df[0].str.split('CHAPTER').str[1],
+                              numpy.nan)
+  # Fixes odd string bug in Chapter V
+  df.loc[df['chapter'].str.contains("Advice from a Caterpillar", na=False, case=False), 'chapter'] = 'CHAPTER V.'
+  # Removes periods from end of chapter strings
+  df['chapter'] = df['chapter'].str.replace(".", "", regex=True)
+  # Removes NA values
+  df.fillna(method="ffill", inplace=True)
+  # Drops all rows that simply read "Chapter..." etc, etc
+  df.drop(df.loc[df[0].str.find('CHAPTER') != -1].index, inplace=True)
+  # Defines column names
+  df.columns = ["sentences", "compound_score", "pos_score", "neg_score", "neu_score", "chapter"]
+  # Writes dataframe to Excel file
   df.to_excel("alice.xlsx")
 
-# create_alice_sid()
+create_alice_sid()
