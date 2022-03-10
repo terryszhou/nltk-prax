@@ -71,7 +71,7 @@ def create_alice_sid():
   # Defines column names
   df.columns = ["sentences", "compound_score", "pos_score", "neg_score", "neu_score", "chapter"]
   # Writes dataframe to Excel file
-  df.to_excel("alice.xlsx")
+  # df.to_excel("alice.xlsx")
 
 create_alice_sid()
 
@@ -186,6 +186,22 @@ def alice_avg_sent_length_graph():
 
 # alice_avg_sent_length_graph()
 
+def get_chunks(text):
+  entities = nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(text)))
+  entity_list = []
+  current_entity = []
+  for entity in entities:
+    if type(entity) == nltk.tree.Tree:
+      current_entity.append(" ".join([token for token, pos in entity.leaves()]))
+    if current_entity:
+      named_entity = " ".join(current_entity)
+      if named_entity not in entity_list:
+        entity_list.append(named_entity)
+        current_entity = []
+    else:
+      continue
+  return entity_list
+
 def clean_sentences():
   string.punctuation += '“”‘—'
   string.punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~“”‘—'
@@ -193,5 +209,14 @@ def clean_sentences():
   df['cleaned_sentences'] = df['sentences'].apply(lambda x: x.translate(translator))
   df['cleaned_sentences'] = df['cleaned_sentences'].str.strip()
   print(df['cleaned_sentences'].loc[50])
+
+  df['tagged_sent'] = df['cleaned_sentences'].str.split(' ').apply(lambda x: nltk.pos_tag(x))
+  print(df.loc[50]['tagged_sent'])
+
+  df['ne'] = df['tagged_sent'].apply(lambda x: nltk.ne_chunk(x, binary=True))
+  print(df.loc[50]['ne'])
+
+  df['named_entities'] = df['cleaned_sentences'].apply(lambda x: get_chunks(x))
+  print(df.loc[50]['named_entities'])
 
 clean_sentences()
