@@ -164,4 +164,23 @@ def alice_chap_vader_sent_graph():
   fig.savefig("public/images/alice_chap_vader_sent_graph.png")
   plt.show()
 
-alice_chap_vader_sent_graph()
+# alice_chap_vader_sent_graph()
+
+def alice_avg_sent_length_graph():
+  df['sentences_length'] = df['sentences'].apply(lambda x: len(x.split(' ')))
+  fig, ax = plt.subplots(figsize=(15,7))
+  ax.bar(x=df.groupby('chapter').nunique()['sentences_length'].index, 
+        height=df.groupby('chapter').nunique()['sentences_length'].values,
+        alpha=0.7, color='#a53363')
+  ax.set_xticklabels(df['chapter'].unique(), rotation=30)
+  ax.set_title('Avg. sentence length - Alice in Wonderland', fontsize=16)
+  ax.spines['top'].set_visible(False)
+  ax.spines['right'].set_visible(False)
+  ax.spines['bottom'].set_alpha(0.2)
+  ax.spines['left'].set_alpha(0.2)
+  ax.yaxis.grid(alpha=0.2)
+  ax.set_ylabel('Word Count')
+  fig.savefig("public/images/alice_avg_sent_length_graph.png")
+  plt.show()
+
+# alice_avg_sent_length_graph()
