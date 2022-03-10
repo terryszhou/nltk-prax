@@ -5,6 +5,9 @@ import string
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 sid = SentimentIntensityAnalyzer()
 import matplotlib.pyplot as plt
+wordnet_lemmatizer = nltk.stem.WordNetLemmatizer()
+words = nltk.corpus.words
+
 
 alice_text = open("alice.txt", "r").read()
 
@@ -206,17 +209,29 @@ def clean_sentences():
   string.punctuation += '“”‘—'
   string.punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~“”‘—'
   translator = str.maketrans('','',string.punctuation)
-  df['cleaned_sentences'] = df['sentences'].apply(lambda x: x.translate(translator))
-  df['cleaned_sentences'] = df['cleaned_sentences'].str.strip()
+  # Returns sentence with extra punctuation tags removed
+  df['cleaned_sentences'] = df['sentences'].apply(lambda x: x.translate(translator)).str.strip()
   print(df['cleaned_sentences'].loc[50])
-
+  # Returns tuples of tokenized words in a sentence
   df['tagged_sent'] = df['cleaned_sentences'].str.split(' ').apply(lambda x: nltk.pos_tag(x))
   print(df.loc[50]['tagged_sent'])
-
+  # Returns condensed form of token tuples in a sentence
   df['ne'] = df['tagged_sent'].apply(lambda x: nltk.ne_chunk(x, binary=True))
   print(df.loc[50]['ne'])
-
+  # Returns all named entities in a sentence
   df['named_entities'] = df['cleaned_sentences'].apply(lambda x: get_chunks(x))
   print(df.loc[50]['named_entities'])
+  # Returns all named entities in the text and removes duplicates
+  unique_ne = []
+  for i in range(len(df)):
+    unique_ne += [x for x in df['named_entities'].iloc[i]]
+  # Removes duplicates
+  unique_named_entities = list(set(unique_ne))
+  # Manually removes irrelevant words
+  nonwords_list = ['THE', 'Mercia', 'Him', 'Everybody', 'Mouse Fury', 'Coils', 'DRINK', 'Prizes', 'Seaography', 'Run', 'Hjckrrh', 'Sixteenth', 'Poor', 'Conqueror For', 'hateC', 'Ah', 'Which', 'Fifteenth', 'Nothing', 'Speak English', 'Eaglet', 'courseI', 'Sentence', 'headBrandy', 'Beauootiful', 'Lobster Quadrille', 'cornerNo', 'Tell', 'Uglification', 'Mock Turtle Mystery', 'EAT', 'Mock Turtle Alice', 'Collar', 'yetOh', 'Caucusrace', 'Turn', 'Pray', 'Long', 'Magpie', 'Ahem', 'enoughI', 'Father William', 'Ma', 'Classics', 'Mind', 'voicesHold', 'Twinkle', 'thingsI', 'Consider', 'Drink', 'Cheshire', 'chimneyNay', 'Seven', 'himHow', 'Keep', 'Fender', 'French', 'Quick', 'Hatter', 'Hush', 'Herald', 'Stand', 'particularHere Bill', 'Kings', 'Mary', 'Dodo Shakespeare', 'Queens', 'Explain', 'Beautiful', 'Puss', 'Tears Curiouser', 'Same', 'Geography', 'Number One', 'France', 'Behead', 'Lory', 'CaucusRace', 'Idiot', 'Pepper', 'Mock', 'Hearts', 'Silence', 'Heads', 'ArithmeticAmbition Distraction Uglification', 'Tut', 'thatIt', 'Latitude', 'Rabbit Sends', 'Are', 'Get', 'Longitude', 'Right Foot Esq Hearthrug', 'mouseO', 'Next', 'Nonsense', 'riddlesI', 'Rule Fortytwo', 'Come', 'doorI', 'Always', 'SOUP Chorus', 'Treacle', 'Paris Rome', 'Aliceand', 'English', 'Stuff', 'Well', 'Down', 'Knave Turn', 'nowDon', 'Pool', 'Luckily', 'Multiplication Table', 'Five', 'Too', 'How', 'Where', 'Shan', 'Hadn', 'Soooop', 'Unimportant', 'otherBill', 'White', 'beautiFUL', 'Goodbye', 'Hand', 'Miss Alice', 'bearMind', 'downHere Bill', 'CHORUS', 'Serpent', 'isOh', 'Yes', 'RABBIT', 'Drawlingthe', 'eyesTell', 'Please Ma', 'Visit', 'Tillie', 'themI', 'FrogFootman', 'Change', 'Pinch', 'END', 'Alice Latitude', 'Soup', 'Latin Grammar', 'Wouldn', 'Wow', 'Conqueror', 'Mine', 'Very', 'Please', 'Majesty', 'No', 'Boots', 'ORANGE', 'Mock Turtle Soup', 'Mock Turtle Drive']
+  unique_named_entities = [x for x in unique_named_entities if x not in nonwords_list]
+  print(unique_named_entities)
+
+
 
 clean_sentences()
