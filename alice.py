@@ -1,6 +1,7 @@
 import nltk
 import pandas
 import numpy
+import string
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 sid = SentimentIntensityAnalyzer()
 import matplotlib.pyplot as plt
@@ -184,3 +185,13 @@ def alice_avg_sent_length_graph():
   plt.show()
 
 # alice_avg_sent_length_graph()
+
+def clean_sentences():
+  string.punctuation += '“”‘—'
+  string.punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~“”‘—'
+  translator = str.maketrans('','',string.punctuation)
+  df['cleaned_sentences'] = df['sentences'].apply(lambda x: x.translate(translator))
+  df['cleaned_sentences'] = df['cleaned_sentences'].str.strip()
+  print(df['cleaned_sentences'].loc[50])
+
+clean_sentences()
