@@ -1,5 +1,7 @@
 import nltk
 import pandas
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+sid = SentimentIntensityAnalyzer()
 
 # # TWITTER SAMPLE ANALYSIS - - - - - - - -
 
@@ -117,3 +119,18 @@ longest_len = max([len(s) for s in alice_sentences])
 
 # Text of longest sentence (split into list of strings).
 [s for s in alice_sentences if len(s) == longest_len]
+
+# Takes sentence as string and parses using Vader Sentiment Intensity Analyzer.
+def sentiment_scores(sentence):
+  sentiment_dict = sid.polarity_scores(sentence)
+  print(f"Overall sentiment dictionary is: {sentiment_dict}.")
+  print(f"Sentence was rated as: {sentiment_dict['neg']*100}% negative")
+  print(f"Sentence was rated as: {sentiment_dict['neu']*100}% neutral")
+  print(f"Sentence was rated as: {sentiment_dict['pos']*100}% positive")
+  print("Sentence overall rated as", end=" ")
+  if sentiment_dict["compound"] >= 0.05:
+    print("positive")
+  elif sentiment_dict["compound"] <= -0.05:
+    print("negative")
+  else:
+    print("neutral")

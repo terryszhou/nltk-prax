@@ -3,30 +3,17 @@ import pandas
 import numpy
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 sid = SentimentIntensityAnalyzer()
+import matplotlib.pyplot as plt
 
 alice_text = open("alice.txt", "r").read()
 
 alice_sentences = nltk.sent_tokenize(alice_text)
 
-# Takes sentence as string and parses using Vader Sentiment Intensity Analyzer.
-def sentiment_scores(sentence):
-  sentiment_dict = sid.polarity_scores(sentence)
-  print(f"Overall sentiment dictionary is: {sentiment_dict}.")
-  print(f"Sentence was rated as: {sentiment_dict['neg']*100}% negative")
-  print(f"Sentence was rated as: {sentiment_dict['neu']*100}% neutral")
-  print(f"Sentence was rated as: {sentiment_dict['pos']*100}% positive")
-  print("Sentence overall rated as", end=" ")
-  if sentiment_dict["compound"] >= 0.05:
-    print("positive")
-  elif sentiment_dict["compound"] <= -0.05:
-    print("negative")
-  else:
-    print("neutral")
-
 compound_scores = []
 
 for sentence in alice_sentences:
-  compound_scores.append((sentence.replace("\n", " "), sid.polarity_scores(sentence)["compound"],
+  compound_scores.append((sentence.replace("\n", " "),
+  sid.polarity_scores(sentence)["compound"],
   sid.polarity_scores(sentence)["pos"],
   sid.polarity_scores(sentence)["neg"],
   sid.polarity_scores(sentence)["neu"]))
@@ -66,9 +53,9 @@ def most_polar_sentences():
 
 # Generates .xlsx of full text, plus SID values.
 def create_alice_sid():
-  # Create Pandas DataFrame
+  # Creates Pandas DataFrame
   df = pandas.DataFrame(compound_scores)
-  # Create 'chapter' column
+  # Creates 'chapter' column. Fills with all strings that contain 'CHAPTER', else NA
   df['chapter'] = numpy.where(df[0].str.find('CHAPTER') != -1,
                               "CHAPTER" + df[0].str.split('CHAPTER').str[1],
                               numpy.nan)
@@ -76,13 +63,30 @@ def create_alice_sid():
   df.loc[df['chapter'].str.contains("Advice from a Caterpillar", na=False, case=False), 'chapter'] = 'CHAPTER V.'
   # Removes periods from end of chapter strings
   df['chapter'] = df['chapter'].str.replace(".", "", regex=True)
-  # Removes NA values
+  # Removes NA values; ffill (forward fill) method propagates last valid value forward
   df.fillna(method="ffill", inplace=True)
   # Drops all rows that simply read "Chapter..." etc, etc
   df.drop(df.loc[df[0].str.find('CHAPTER') != -1].index, inplace=True)
   # Defines column names
   df.columns = ["sentences", "compound_score", "pos_score", "neg_score", "neu_score", "chapter"]
   # Writes dataframe to Excel file
-  df.to_excel("alice.xlsx")
+  # df.to_excel("alice.xlsx")
+  fig, ax = plt.subplots(figsize=(15,5))
+  ax.plot(df.groupby('chapter', sort=False).mean()['compound_score'].index,
+          df.groupby('chapter', sort=False).mean()['compound_score'].values, linewidth=3, color="#a53363")
+  ax.set_xticklabels(df.groupby('chapter', sort=False).mean()['compound_score'].index,
+                    rotation=30)
+  ax.set_ylim(-0.2, 0.2)
+  ax.axhline(y=0, linestyle=':', color='grey')
+  ax.set_title('Mean compound sentiment score of each chapter - Alice in Wonderland', fontsize=16)
+  ax.spines['top'].set_visible(False)
+  ax.fill_between(x=ax.get_xticks(), y1=-0.05, y2=0.05, color='grey', alpha=0.1)
+  ax.spines['right'].set_visible(False)
+  ax.text(x=0, y=-0.03, s='neutral')
+  ax.spines['bottom'].set_visible(False)
+  ax.spines['left'].set_visible(False)
+  ax.yaxis.grid(alpha=0.2)
+  plt.show()
+
 
 create_alice_sid()
