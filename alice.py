@@ -74,22 +74,37 @@ def create_alice_sid():
 
 create_alice_sid()
 
-def create_alice_graph():
+def alice_compound_graph():
+  # Separates plt tuple into figure and axis
   fig, ax = plt.subplots(figsize=(15,7))
+  # Plots mean compound scores by chapter
   ax.plot(df.groupby('chapter', sort=False).mean()['compound_score'].index,
-          df.groupby('chapter', sort=False).mean()['compound_score'].values, linewidth=3, color="#a53363")
-  ax.set_xticklabels(df.groupby('chapter', sort=False).mean()['compound_score'].index,
-                    rotation=30)
-  ax.set_ylim(-0.2, 0.2)
+          df.groupby('chapter', sort=False).mean()['compound_score'].values,
+          linewidth=3, color="#a53363")
+  # Labels and skews x-axis
+  ax.set_xticklabels(df.groupby('chapter', sort=False).mean()['compound_score'].index, rotation=30)
+  # Sets y-axis max/min values
+  ax.set_ylim(-0.15, 0.15)
+  # Sets central x-axis line
   ax.axhline(y=0, linestyle=':', color='grey')
+  # Sets title
   ax.set_title('Mean compound sentiment score of each chapter - Alice in Wonderland', fontsize=16)
+  # Sets top/right borders invisible
   ax.spines['top'].set_visible(False)
-  ax.fill_between(x=ax.get_xticks(), y1=-0.05, y2=0.05, color='grey', alpha=0.1)
   ax.spines['right'].set_visible(False)
-  ax.text(x=0, y=-0.03, s='neutral')
-  ax.spines['bottom'].set_visible(False)
-  ax.spines['left'].set_visible(False)
+  # Sets bottom/left border 20% opaque
+  ax.spines['bottom'].set_alpha(0.2)
+  ax.spines['left'].set_alpha(0.2)
+  # Creates central neutral area
+  ax.fill_between(x=ax.get_xticks(), y1=-0.05, y2=0.05, color='grey', alpha=0.1)
+  # Writes text for central neutral area
+  ax.text(x=0, y=0.025, s='neutral')
+  # Sets opacity of x/y guide lines
+  ax.xaxis.grid(alpha=0.2)
   ax.yaxis.grid(alpha=0.2)
+  # Saves figure
+  fig.savefig("public/images/alice_compound_graph.png")
+  # Shows graph in terminal
   plt.show()
 
-create_alice_graph()
+alice_compound_graph()
