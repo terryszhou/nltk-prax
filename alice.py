@@ -1,18 +1,18 @@
-import nltk
-import pandas
-import numpy
-import string
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-sid = SentimentIntensityAnalyzer()
 import matplotlib.pyplot as plt
-wordnet_lemmatizer = nltk.stem.WordNetLemmatizer()
-words = nltk.corpus.words
+import pandas as pd
+import string
 
+import nltk
+import numpy as np
+
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+
+words = nltk.corpus.words
+wordnet_lemmatizer = nltk.stem.WordNetLemmatizer()
+sid = SentimentIntensityAnalyzer()
 
 alice_text = open("alice.txt", "r").read()
-
 alice_sentences = nltk.sent_tokenize(alice_text)
-
 compound_scores = []
 
 for sentence in alice_sentences:
@@ -55,14 +55,14 @@ def most_polar_sentences():
 
 # most_polar_sentences()
 
-df = pandas.DataFrame(compound_scores)
+df = pd.DataFrame(compound_scores)
 
 # Generates .xlsx of full text, plus SID values.
 def create_alice_sid():
   # Creates 'chapter' column. Fills with all strings that contain 'CHAPTER', else NA
-  df['chapter'] = numpy.where(df[0].str.find('CHAPTER') != -1,
+  df['chapter'] = np.where(df[0].str.find('CHAPTER') != -1,
                               "CHAPTER" + df[0].str.split('CHAPTER').str[1],
-                              numpy.nan)
+                              np.nan)
   # Fixes odd string bug in Chapter V
   df.loc[df['chapter'].str.contains("Advice from a Caterpillar", na=False, case=False), 'chapter'] = 'CHAPTER V.'
   # Removes periods from end of chapter strings
@@ -70,7 +70,7 @@ def create_alice_sid():
   # Removes NA values; ffill (forward fill) method propagates last valid value forward
   df.fillna(method="ffill", inplace=True)
   # Drops all rows that simply read "Chapter..." etc, etc
-  df.drop(df.loc[df[0].str.find('CHAPTER') != -1].index, inplace=True)
+  # df.drop(df.loc[df[0].str.find('CHAPTER') != -1].index, inplace=True)
   # Defines column names
   df.columns = ["sentences", "compound_score", "pos_score", "neg_score", "neu_score", "chapter"]
   # Writes dataframe to Excel file
@@ -114,9 +114,9 @@ def alice_chapter_sentiment_graph():
 # alice_chapter_sentiment_graph()
 
 def alice_overall_sent_totals():
-  df['pos_score'] = numpy.where(df['compound_score'] >= 0.05, 1, 0)
-  df['neg_score'] = numpy.where(df['compound_score'] <= -0.05, 1, 0)
-  df['neu_score'] = numpy.where((df['compound_score'] > -0.05) &
+  df['pos_score'] = np.where(df['compound_score'] >= 0.05, 1, 0)
+  df['neg_score'] = np.where(df['compound_score'] <= -0.05, 1, 0)
+  df['neu_score'] = np.where((df['compound_score'] > -0.05) &
                             (df['compound_score'] < 0.05), 1, 0)
   print(f"Number of overall positive sentences is: {len(df[df['pos_score'] == 1])}")
   print(f"Number of overall neutral sentences is: {len(df[df['neg_score'] == 1])}")
@@ -209,29 +209,44 @@ def clean_sentences():
   string.punctuation += '“”‘—'
   string.punctuation = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~“”‘—'
   translator = str.maketrans('','',string.punctuation)
+
   # Returns sentence with extra punctuation tags removed
   df['cleaned_sentences'] = df['sentences'].apply(lambda x: x.translate(translator)).str.strip()
-  print(df['cleaned_sentences'].loc[50])
+  # print(df['cleaned_sentences'].loc[50])
+
   # Returns tuples of tokenized words in a sentence
   df['tagged_sent'] = df['cleaned_sentences'].str.split(' ').apply(lambda x: nltk.pos_tag(x))
-  print(df.loc[50]['tagged_sent'])
+  # print(df.loc[50]['tagged_sent'])
+
   # Returns condensed form of token tuples in a sentence
   df['ne'] = df['tagged_sent'].apply(lambda x: nltk.ne_chunk(x, binary=True))
-  print(df.loc[50]['ne'])
+  # print(df.loc[50]['ne'])
+
   # Returns all named entities in a sentence
   df['named_entities'] = df['cleaned_sentences'].apply(lambda x: get_chunks(x))
-  print(df.loc[50]['named_entities'])
+  # print(df.loc[50]['named_entities'])
+
   # Returns all named entities in the text and removes duplicates
   unique_ne = []
   for i in range(len(df)):
     unique_ne += [x for x in df['named_entities'].iloc[i]]
+
   # Removes duplicates
   unique_named_entities = list(set(unique_ne))
-  # Manually removes irrelevant words
-  nonwords_list = ['THE', 'Mercia', 'Him', 'Everybody', 'Mouse Fury', 'Coils', 'DRINK', 'Prizes', 'Seaography', 'Run', 'Hjckrrh', 'Sixteenth', 'Poor', 'Conqueror For', 'hateC', 'Ah', 'Which', 'Fifteenth', 'Nothing', 'Speak English', 'Eaglet', 'courseI', 'Sentence', 'headBrandy', 'Beauootiful', 'Lobster Quadrille', 'cornerNo', 'Tell', 'Uglification', 'Mock Turtle Mystery', 'EAT', 'Mock Turtle Alice', 'Collar', 'yetOh', 'Caucusrace', 'Turn', 'Pray', 'Long', 'Magpie', 'Ahem', 'enoughI', 'Father William', 'Ma', 'Classics', 'Mind', 'voicesHold', 'Twinkle', 'thingsI', 'Consider', 'Drink', 'Cheshire', 'chimneyNay', 'Seven', 'himHow', 'Keep', 'Fender', 'French', 'Quick', 'Hatter', 'Hush', 'Herald', 'Stand', 'particularHere Bill', 'Kings', 'Mary', 'Dodo Shakespeare', 'Queens', 'Explain', 'Beautiful', 'Puss', 'Tears Curiouser', 'Same', 'Geography', 'Number One', 'France', 'Behead', 'Lory', 'CaucusRace', 'Idiot', 'Pepper', 'Mock', 'Hearts', 'Silence', 'Heads', 'ArithmeticAmbition Distraction Uglification', 'Tut', 'thatIt', 'Latitude', 'Rabbit Sends', 'Are', 'Get', 'Longitude', 'Right Foot Esq Hearthrug', 'mouseO', 'Next', 'Nonsense', 'riddlesI', 'Rule Fortytwo', 'Come', 'doorI', 'Always', 'SOUP Chorus', 'Treacle', 'Paris Rome', 'Aliceand', 'English', 'Stuff', 'Well', 'Down', 'Knave Turn', 'nowDon', 'Pool', 'Luckily', 'Multiplication Table', 'Five', 'Too', 'How', 'Where', 'Shan', 'Hadn', 'Soooop', 'Unimportant', 'otherBill', 'White', 'beautiFUL', 'Goodbye', 'Hand', 'Miss Alice', 'bearMind', 'downHere Bill', 'CHORUS', 'Serpent', 'isOh', 'Yes', 'RABBIT', 'Drawlingthe', 'eyesTell', 'Please Ma', 'Visit', 'Tillie', 'themI', 'FrogFootman', 'Change', 'Pinch', 'END', 'Alice Latitude', 'Soup', 'Latin Grammar', 'Wouldn', 'Wow', 'Conqueror', 'Mine', 'Very', 'Please', 'Majesty', 'No', 'Boots', 'ORANGE', 'Mock Turtle Soup', 'Mock Turtle Drive']
-  unique_named_entities = [x for x in unique_named_entities if x not in nonwords_list]
+
+  # Manually removes irrelevant words and adds missed ones
+  nonwords_list = ['THE', 'Mercia', 'Him', 'Everybody', 'Mouse Fury', 'Coils', 'DRINK', 'Prizes', 'Seaography', 'Run', 'Hjckrrh', 'Sixteenth', 'Poor', 'Conqueror For', 'hateC', 'Ah', 'Which', 'Fifteenth', 'Nothing', 'Speak English', 'Eaglet', 'courseI', 'Sentence', 'headBrandy', 'Beauootiful', 'Lobster Quadrille', 'cornerNo', 'Tell', 'Uglification', 'Mock Turtle Mystery', 'EAT', 'Mock Turtle Alice', 'Collar', 'yetOh', 'Caucusrace', 'Turn', 'Pray', 'Long', 'Magpie', 'Ahem', 'enoughI', 'Ma', 'Classics', 'Mind', 'voicesHold', 'Twinkle', 'thingsI', 'Consider', 'Drink', 'Cheshire', 'chimneyNay', 'Seven', 'himHow', 'Keep', 'Fender', 'French', 'Quick', 'Hatter', 'Hush', 'Herald', 'Stand', 'particularHere Bill', 'Kings', 'Mary', 'Dodo Shakespeare', 'Queens', 'Explain', 'Beautiful', 'Puss', 'Tears Curiouser', 'Same', 'Geography', 'Number One', 'France', 'Behead', 'Lory', 'CaucusRace', 'Idiot', 'Pepper', 'Mock', 'Hearts', 'Silence', 'Heads', 'ArithmeticAmbition Distraction Uglification', 'Tut', 'thatIt', 'Latitude', 'Rabbit Sends', 'Are', 'Get', 'Longitude', 'Right Foot Esq Hearthrug', 'mouseO', 'Next', 'Nonsense', 'riddlesI', 'Rule Fortytwo', 'Come', 'doorI', 'Always', 'SOUP Chorus', 'Treacle', 'Paris Rome', 'Aliceand', 'English', 'Stuff', 'Well', 'Down', 'Knave Turn', 'nowDon', 'Pool', 'Luckily', 'Multiplication Table', 'Five', 'Too', 'How', 'Where', 'Shan', 'Hadn', 'Soooop', 'Unimportant', 'otherBill', 'White', 'beautiFUL', 'Goodbye', 'Hand', 'Miss Alice', 'bearMind', 'downHere Bill', 'CHORUS', 'Serpent', 'isOh', 'Yes', 'RABBIT', 'Drawlingthe', 'eyesTell', 'Please Ma', 'Visit', 'Tillie', 'themI', 'FrogFootman', 'Change', 'Pinch', 'END', 'Alice Latitude', 'Soup', 'Latin Grammar', 'Wouldn', 'Wow', 'Conqueror', 'Mine', 'Very', 'Please', 'Majesty', 'No', 'Boots', 'ORANGE', 'Mock Turtle Soup', 'Mock Turtle Drive', 'Queen Cat', 'Elsie Lacie', 'Hadn', 'Classics', 'CHAPTER', 'VIII' 'V', 'III']
+  unique_named_entities = [x for x in unique_named_entities if x not in nonwords_list] + ['Elsie', 'Lacie', 'Tillie', 'Queen', 'King']
   print(unique_named_entities)
 
-
+  # Creates column with occurrence count for each named entity
+  for name in unique_named_entities:
+    df[name] = 0
+  for j in range(1, len(df)):
+    for name in unique_named_entities:
+      if name in df.loc[j]['named_entities']:
+        df[name].iloc[j] = 1
+  df.to_excel("new_alice.xlsx")
+  print(df['Alice'].sum())
 
 clean_sentences()
