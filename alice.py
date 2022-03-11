@@ -283,11 +283,10 @@ def alice_main_ne_chapter_occurrences():
 
 # alice_main_ne_chapter_occurrences()
 
-colors = ["#186A3B", "#1D8348", "#239B56", "#28B463", "#2ECC71", "#58D68D",
-         "#82E0AA", "#ABEBC6", "#D5F5E3", "#FCF3CF", "#F9E79F", "#F7DC6F"]
+colors = ["#186A3B", "#1D8348", "#239B56", "#28B463", "#2ECC71", "#58D68D", "#82E0AA", "#ABEBC6", "#D5F5E3", "#FCF3CF", "#F9E79F", "#F7DC6F"]
+top_chars = df_grouped.iloc[:,4:].sum().sort_values(ascending=False)[0:15].index.drop('neu_score')
 
 def top_characters():
-  top_chars = df_grouped.iloc[:,4:].sum().sort_values(ascending=False)[0:15].index.drop('neu_score')
   sums_by_chapter = {}
   fig, ax = plt.subplots(figsize=(12, 7))
   i = 0
@@ -316,4 +315,28 @@ def top_characters():
   fig.savefig("public/images/alice_top_characters.png")
   plt.show()
 
-top_characters()
+# top_characters()
+
+def characters_by_sentiment():
+  df['pos'] = np.where(df['pos_score'] > df['neg_score'], 1, 0)
+  df['neg'] = np.where(df['pos_score'] < df['neg_score'], 1, 0)
+  df['neu'] = np.where(df['pos_score'] == df['neg_score'], 1, 0)
+  fig, ax = plt.subplots(figsize=(15, 7))
+  for char in top_chars:
+    char_df = df[df[char] != 0].loc[:, ['pos', 'neg', 'neu']].sum() / len(df[df[char] != 0]) * 100
+    ax.barh(y=char, width=char_df.loc['pos'], color='#186A3B', label='positive')
+    ax.barh(y=char, width=char_df.loc['neu'], left=char_df.loc['pos'], color='#FCF3CF', alpha=0.3, label='neutral')
+    ax.barh(y=char, width=char_df.loc['neg'], left=char_df.loc['pos'] + char_df.loc['neu'], color='#D4AC0D', label='negative')
+  ax.legend(['positive', 'neutral', 'negative'], frameon=False, bbox_to_anchor=(1,0.5))
+  ax.spines['top'].set_visible(False)
+  ax.spines['right'].set_visible(False)
+  ax.spines['bottom'].set_alpha(0.2)
+  ax.spines['left'].set_alpha(0.2)
+  ax.xaxis.grid(alpha=0.2)
+  ax.yaxis.grid(alpha=0.2)
+  ax.set_xlabel('[%]')
+  ax.set_title('Sentences with character mention divided by sentiment', fontsize=16)
+  fig.savefig("public/images/alice_characters_by_sentiment.png")
+  plt.show()
+
+characters_by_sentiment()
