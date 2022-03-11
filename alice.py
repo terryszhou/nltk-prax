@@ -226,6 +226,9 @@ def clean_sentences():
   df['named_entities'] = df['cleaned_sentences'].apply(lambda x: get_chunks(x))
   # print(df.loc[50]['named_entities'])
 
+clean_sentences()
+
+def named_entities():
   # Returns all named entities in the text and removes duplicates
   unique_ne = []
   for i in range(len(df)):
@@ -250,6 +253,9 @@ def clean_sentences():
   df.to_excel("new_alice.xlsx")
   # print(df['Alice'].sum())
 
+named_entities()
+
+def alice_ne_chapter_occurrences():
   df_grouped = df.groupby('chapter', as_index=False).sum()
   # print(df_grouped)
   # df_grouped.drop(['sentences', 'compound_score', 'cleaned_sentences', 'tagged_sent', 'ne', 'named_entities'], axis=1, inplace=True)
@@ -270,8 +276,7 @@ def clean_sentences():
   ax.xaxis.grid(alpha=0.2)
   ax.yaxis.grid(alpha=0.2)
   ax.set_xticklabels(df_grouped['chapter'], rotation=30)
-  fig.savefig("public/images/alice_ne_chapter_occurrence.png")
+  fig.savefig("public/images/alice_ne_chapter_occurrences.png")
   plt.show()
 
-
-clean_sentences()
+alice_ne_chapter_occurrences()
