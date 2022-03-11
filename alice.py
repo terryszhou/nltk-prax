@@ -258,17 +258,18 @@ def clean_sentences():
   # print(df_grouped.columns)
   fig, ax = plt.subplots(figsize=(15,7))
   for character in ['Alice', 'Queen', 'Hatter', 'Rabbit', 'Cat']:
-    df_plot = df_grouped[['chapter', character]]
+    # df_plot = df_grouped[['chapter', character]]
     ax.plot(df_grouped['chapter'], df_grouped[character], label=character)
-    ax.legend(frameon=False)
-    ax.set_title('Occurrences of named entities in text - main characters in Alice in Wonderland', fontsize=16)
-    ax.set_ylabel('Count')
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.spines['bottom'].set_alpha(0.2)
-    ax.spines['left'].set_alpha(0.2)
-    ax.yaxis.grid(alpha=0.2)
-    ax.set_xticklabels(df_grouped['chapter'], rotation=30)
+  ax.legend(frameon=False)
+  ax.set_title('Occurrences of named entities in text - main characters in Alice in Wonderland', fontsize=16)
+  ax.set_ylabel('Count')
+  ax.spines['top'].set_visible(False)
+  ax.spines['right'].set_visible(False)
+  ax.spines['bottom'].set_alpha(0.2)
+  ax.spines['left'].set_alpha(0.2)
+  ax.xaxis.grid(alpha=0.2)
+  ax.yaxis.grid(alpha=0.2)
+  ax.set_xticklabels(df_grouped['chapter'], rotation=30)
   fig.savefig("public/images/alice_ne_chapter_occurrence.png")
   plt.show()
 
