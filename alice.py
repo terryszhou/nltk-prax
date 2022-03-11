@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 import string
 
 import nltk
@@ -255,8 +256,9 @@ def named_entities():
 
 named_entities()
 
-def alice_ne_chapter_occurrences():
-  df_grouped = df.groupby('chapter', as_index=False).sum()
+df_grouped = df.groupby('chapter', as_index=False).sum()
+
+def alice_main_ne_chapter_occurrences():
   # print(df_grouped)
   # df_grouped.drop(['sentences', 'compound_score', 'cleaned_sentences', 'tagged_sent', 'ne', 'named_entities'], axis=1, inplace=True)
   # df_grouped.loc[:,(df_grouped.sum() == 1)].columns
@@ -276,7 +278,42 @@ def alice_ne_chapter_occurrences():
   ax.xaxis.grid(alpha=0.2)
   ax.yaxis.grid(alpha=0.2)
   ax.set_xticklabels(df_grouped['chapter'], rotation=30)
-  fig.savefig("public/images/alice_ne_chapter_occurrences.png")
+  fig.savefig("public/images/alice_main_ne_chapter_occurrences.png")
   plt.show()
 
-alice_ne_chapter_occurrences()
+# alice_main_ne_chapter_occurrences()
+
+colors = ["#186A3B", "#1D8348", "#239B56", "#28B463", "#2ECC71", "#58D68D",
+         "#82E0AA", "#ABEBC6", "#D5F5E3", "#FCF3CF", "#F9E79F", "#F7DC6F"]
+
+def top_characters():
+  top_chars = df_grouped.iloc[:,4:].sum().sort_values(ascending=False)[0:15].index.drop('neu_score')
+  sums_by_chapter = {}
+  fig, ax = plt.subplots(figsize=(12, 7))
+  i = 0
+  sums_by_chapter = {}
+  for chap in df['chapter'].unique():
+    df_plot = df[df['chapter'] == chap]
+    for char in top_chars:
+      df_plot2 = df_plot.groupby('chapter', as_index=False).sum()
+      value = df_plot2[char].values[0]
+      if char not in sums_by_chapter.keys():
+        sums_by_chapter[char] = 0
+      ax.barh(y=char, width=value, left=sums_by_chapter[char], color=colors[i])
+      sums_by_chapter[char] = value + sums_by_chapter[char]
+    i += 1
+  ax.spines['top'].set_visible(False)
+  ax.spines['right'].set_visible(False)
+  ax.spines['bottom'].set_alpha(0.2)
+  ax.spines['left'].set_alpha(0.2)
+  ax.xaxis.grid(alpha=0.2)
+  ax.yaxis.grid(alpha=0.2)
+
+  ax.set_title('Total character occurrences by chapter', fontsize=16)
+
+  sns.palplot(colors, size=0.2)
+  ax.text(s='Chapters I to XII', x=-40, y=-5)
+  fig.savefig("public/images/alice_top_characters.png")
+  plt.show()
+
+top_characters()
