@@ -235,9 +235,9 @@ def clean_sentences():
   unique_named_entities = list(set(unique_ne))
 
   # Manually removes irrelevant words and adds missed ones
-  nonwords_list = ['THE', 'Mercia', 'Him', 'Everybody', 'Mouse Fury', 'Coils', 'DRINK', 'Prizes', 'Seaography', 'Run', 'Hjckrrh', 'Sixteenth', 'Poor', 'Conqueror For', 'hateC', 'Ah', 'Which', 'Fifteenth', 'Nothing', 'Speak English', 'Eaglet', 'courseI', 'Sentence', 'headBrandy', 'Beauootiful', 'Lobster Quadrille', 'cornerNo', 'Tell', 'Uglification', 'Mock Turtle Mystery', 'EAT', 'Mock Turtle Alice', 'Collar', 'yetOh', 'Caucusrace', 'Turn', 'Pray', 'Long', 'Magpie', 'Ahem', 'enoughI', 'Ma', 'Classics', 'Mind', 'voicesHold', 'Twinkle', 'thingsI', 'Consider', 'Drink', 'Cheshire', 'chimneyNay', 'Seven', 'himHow', 'Keep', 'Fender', 'French', 'Quick', 'Hatter', 'Hush', 'Herald', 'Stand', 'particularHere Bill', 'Kings', 'Mary', 'Dodo Shakespeare', 'Queens', 'Explain', 'Beautiful', 'Puss', 'Tears Curiouser', 'Same', 'Geography', 'Number One', 'France', 'Behead', 'Lory', 'CaucusRace', 'Idiot', 'Pepper', 'Mock', 'Hearts', 'Silence', 'Heads', 'ArithmeticAmbition Distraction Uglification', 'Tut', 'thatIt', 'Latitude', 'Rabbit Sends', 'Are', 'Get', 'Longitude', 'Right Foot Esq Hearthrug', 'mouseO', 'Next', 'Nonsense', 'riddlesI', 'Rule Fortytwo', 'Come', 'doorI', 'Always', 'SOUP Chorus', 'Treacle', 'Paris Rome', 'Aliceand', 'English', 'Stuff', 'Well', 'Down', 'Knave Turn', 'nowDon', 'Pool', 'Luckily', 'Multiplication Table', 'Five', 'Too', 'How', 'Where', 'Shan', 'Hadn', 'Soooop', 'Unimportant', 'otherBill', 'White', 'beautiFUL', 'Goodbye', 'Hand', 'Miss Alice', 'bearMind', 'downHere Bill', 'CHORUS', 'Serpent', 'isOh', 'Yes', 'RABBIT', 'Drawlingthe', 'eyesTell', 'Please Ma', 'Visit', 'Tillie', 'themI', 'FrogFootman', 'Change', 'Pinch', 'END', 'Alice Latitude', 'Soup', 'Latin Grammar', 'Wouldn', 'Wow', 'Conqueror', 'Mine', 'Very', 'Please', 'Majesty', 'No', 'Boots', 'ORANGE', 'Mock Turtle Soup', 'Mock Turtle Drive', 'Queen Cat', 'Elsie Lacie', 'Hadn', 'Classics', 'CHAPTER', 'VIII' 'V', 'III']
-  unique_named_entities = [x for x in unique_named_entities if x not in nonwords_list] + ['Elsie', 'Lacie', 'Tillie', 'Queen', 'King']
-  print(unique_named_entities)
+  nonwords_list = ['THE', 'Mercia', 'Him', 'Everybody', 'Mouse Fury', 'Coils', 'DRINK', 'Prizes', 'Seaography', 'Run', 'Hjckrrh', 'Sixteenth', 'Poor', 'Conqueror For', 'hateC', 'Ah', 'Which', 'Fifteenth', 'Nothing', 'Speak English', 'Eaglet', 'courseI', 'Sentence', 'headBrandy', 'Beauootiful', 'Lobster Quadrille', 'cornerNo', 'Tell', 'Uglification', 'Mock Turtle Mystery', 'EAT', 'Mock Turtle Alice', 'Collar', 'yetOh', 'Caucusrace', 'Turn', 'Pray', 'Long', 'Magpie', 'Ahem', 'enoughI', 'Ma', 'Classics', 'Mind', 'voicesHold', 'Twinkle', 'thingsI', 'Consider', 'Drink', 'Cheshire', 'chimneyNay', 'Seven', 'himHow', 'Keep', 'Fender', 'French', 'Quick', 'Hush', 'Herald', 'Stand', 'particularHere Bill', 'Kings', 'Mary', 'Dodo Shakespeare', 'Queens', 'Explain', 'Beautiful', 'Puss', 'Tears Curiouser', 'Same', 'Geography', 'Number One', 'France', 'Behead', 'Lory', 'CaucusRace', 'Idiot', 'Pepper', 'Mock', 'Hearts', 'Silence', 'Heads', 'ArithmeticAmbition Distraction Uglification', 'Tut', 'thatIt', 'Latitude', 'Rabbit Sends', 'Are', 'Get', 'Longitude', 'Right Foot Esq Hearthrug', 'mouseO', 'Next', 'Nonsense', 'riddlesI', 'Rule Fortytwo', 'Come', 'doorI', 'Always', 'SOUP Chorus', 'Treacle', 'Paris Rome', 'Aliceand', 'English', 'Stuff', 'Well', 'Down', 'Knave Turn', 'nowDon', 'Pool', 'Luckily', 'Multiplication Table', 'Five', 'Too', 'How', 'Where', 'Shan', 'Hadn', 'Soooop', 'Unimportant', 'otherBill', 'White', 'beautiFUL', 'Goodbye', 'Hand', 'Miss Alice', 'bearMind', 'downHere Bill', 'CHORUS', 'Serpent', 'isOh', 'Yes', 'RABBIT', 'Drawlingthe', 'eyesTell', 'Please Ma', 'Visit', 'themI', 'FrogFootman', 'Change', 'Pinch', 'END', 'Alice Latitude', 'Soup', 'Latin Grammar', 'Wouldn', 'Wow', 'Conqueror', 'Mine', 'Very', 'Please', 'Majesty', 'No', 'Boots', 'ORANGE', 'Mock Turtle Soup', 'Mock Turtle Drive', 'Queen Cat', 'Elsie Lacie', 'Hadn', 'Classics', 'CHAPTER', 'VIII' 'V', 'III']
+  unique_named_entities = [x for x in unique_named_entities if x not in nonwords_list] + ['Elsie', 'Lacie', 'Queen', 'King']
+  # print(unique_named_entities)
 
   # Creates column with occurrence count for each named entity
   for name in unique_named_entities:
@@ -246,7 +246,31 @@ def clean_sentences():
     for name in unique_named_entities:
       if name in df.loc[j]['named_entities']:
         df[name].iloc[j] = 1
+  # Creates new .xlsx file
   df.to_excel("new_alice.xlsx")
-  print(df['Alice'].sum())
+  # print(df['Alice'].sum())
+
+  df_grouped = df.groupby('chapter', as_index=False).sum()
+  # print(df_grouped)
+  # df_grouped.drop(['sentences', 'compound_score', 'cleaned_sentences', 'tagged_sent', 'ne', 'named_entities'], axis=1, inplace=True)
+  # df_grouped.loc[:,(df_grouped.sum() == 1)].columns
+  # df_grouped.drop(df_grouped.loc[:,(df_grouped.sum() == 1)].columns, axis=1, inplace=True)
+  # print(df_grouped.columns)
+  fig, ax = plt.subplots(figsize=(15,7))
+  for character in ['Alice', 'Queen', 'Hatter', 'Rabbit', 'Cat']:
+    df_plot = df_grouped[['chapter', character]]
+    ax.plot(df_grouped['chapter'], df_grouped[character], label=character)
+    ax.legend(frameon=False)
+    ax.set_title('Occurrences of named entities in text - main characters in Alice in Wonderland', fontsize=16)
+    ax.set_ylabel('Count')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['bottom'].set_alpha(0.2)
+    ax.spines['left'].set_alpha(0.2)
+    ax.yaxis.grid(alpha=0.2)
+    ax.set_xticklabels(df_grouped['chapter'], rotation=30)
+  fig.savefig("public/images/alice_ne_chapter_occurrence.png")
+  plt.show()
+
 
 clean_sentences()
